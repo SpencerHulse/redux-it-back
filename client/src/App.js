@@ -14,9 +14,19 @@ import NoMatch from "./pages/NoMatch";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Nav from "./components/Nav";
-import { StoreProvider } from "./utils/GlobalState";
 import OrderHistory from "./pages/OrderHistory";
 import Success from "./pages/Success";
+
+import { StoreProvider } from "./utils/GlobalState"; // React Context API?
+// Redux store needs to go here to replace Context API...
+// redux stuff
+import { createStore } from "redux";
+// reducer
+import reducer from "./utils/reducer";
+// React/Redux - Provider, wraps app. Connect, used in components.
+import { Provider } from "react-redux";
+
+const store = createStore(reducer);
 
 const httpLink = createHttpLink({
   uri: "/graphql",
@@ -43,16 +53,18 @@ function App() {
       <Router>
         <div>
           <StoreProvider>
-            <Nav />
-            <Switch>
-              <Route exact path="/" component={Home} />
-              <Route exact path="/login" component={Login} />
-              <Route exact path="/signup" component={Signup} />
-              <Route exact path="/orderHistory" component={OrderHistory} />
-              <Route exact path="/products/:id" component={Detail} />
-              <Route exact path="/success" component={Success} />
-              <Route component={NoMatch} />
-            </Switch>
+            <Provider store={store}>
+              <Nav />
+              <Switch>
+                <Route exact path="/" component={Home} />
+                <Route exact path="/login" component={Login} />
+                <Route exact path="/signup" component={Signup} />
+                <Route exact path="/orderHistory" component={OrderHistory} />
+                <Route exact path="/products/:id" component={Detail} />
+                <Route exact path="/success" component={Success} />
+                <Route component={NoMatch} />
+              </Switch>
+            </Provider>
           </StoreProvider>
         </div>
       </Router>
