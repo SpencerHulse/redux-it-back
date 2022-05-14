@@ -15,8 +15,7 @@ function ProductList({ products = [], currentCategory = "", getProducts }) {
   useEffect(() => {
     // If there's data to be stored, save it in two places
     if (data) {
-      console.log(data);
-      // Global state object
+      // Redux
       getProducts(data.products);
 
       // IndexedDB
@@ -69,9 +68,7 @@ function ProductList({ products = [], currentCategory = "", getProducts }) {
 }
 
 const mapStateToProps = (state) => {
-  console.log(state);
   const { products, currentCategory } = state;
-  // console.log(products);
   return { products, currentCategory };
 };
 
