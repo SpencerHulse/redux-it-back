@@ -53,6 +53,7 @@ function reducer(state = initialStore, action) {
       };
 
     case REMOVE_FROM_CART:
+      console.log(state.cart);
       let newState = state.cart.filter((product) => {
         return product._id !== action._id;
       });

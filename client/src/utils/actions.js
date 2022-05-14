@@ -39,3 +39,11 @@ export const updateTheCategories = (categories) => {
 export const updateCurrentCategory = (id) => {
   return { type: UPDATE_CURRENT_CATEGORY, currentCategory: id };
 };
+
+export const removeItemFromCart = (id) => {
+  return { type: REMOVE_FROM_CART, _id: id };
+};
+
+export const updateQuantity = (id, quantity) => {
+  return { type: UPDATE_CART_QUANTITY, _id: id, purchaseQuantity: quantity };
+};

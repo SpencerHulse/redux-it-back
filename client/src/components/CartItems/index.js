@@ -1,16 +1,12 @@
 import React from "react";
 import { useStoreContext } from "../../utils/GlobalState";
-import { REMOVE_FROM_CART, UPDATE_CART_QUANTITY } from "../../utils/actions";
+import { removeItemFromCart, updateQuantity } from "../../utils/actions";
 import { idbPromise } from "../../utils/helpers";
+import { connect } from "react-redux";
 
-const CartItem = ({ item }) => {
-  const [, dispatch] = useStoreContext();
-
+const CartItem = ({ item, remove, update }) => {
   const removeFromCart = (item) => {
-    dispatch({
-      type: REMOVE_FROM_CART,
-      _id: item._id,
-    });
+    remove(item._id);
 
     idbPromise("cart", "delete", { ...item });
   };
@@ -19,18 +15,11 @@ const CartItem = ({ item }) => {
     const value = e.target.value;
 
     if (value === "0") {
-      dispatch({
-        type: REMOVE_FROM_CART,
-        _id: item._id,
-      });
+      remove(item._id);
 
       idbPromise("cart", "delete", { ...item });
     } else {
-      dispatch({
-        type: UPDATE_CART_QUANTITY,
-        _id: item._id,
-        purchaseQuantity: parseInt(value),
-      });
+      update(item._id, parseInt(value));
 
       idbPromise("cart", "put", {
         ...item,
@@ -69,4 +58,11 @@ const CartItem = ({ item }) => {
   );
 };
 
-export default CartItem;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    remove: (id) => dispatch(removeItemFromCart(id)),
+    update: (id, quantity) => dispatch(updateQuantity(id, quantity)),
+  };
+};
+
+export default connect(null, mapDispatchToProps)(CartItem);
