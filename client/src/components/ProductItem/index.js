@@ -6,7 +6,7 @@ import { idbPromise } from "../../utils/helpers";
 import { connect } from "react-redux";
 import { updateCartQuantity, itemToCart } from "../../utils/actions";
 
-function ProductItem(item, { cart, cartQuantity, addItemToCart }) {
+function ProductItem(item, { cart = [], cartQuantity, addItemToCart }) {
   const { image, name, _id, price, quantity } = item;
 
   const addToCart = () => {

@@ -28,7 +28,7 @@ export const updateCartQuantity = (_id, itemInCart) => {
 export const itemToCart = (item) => {
   return {
     type: ADD_TO_CART,
-    payload: { product: { ...item, purchaseQuantity: 1 } },
+    product: { ...item, purchaseQuantity: 1 },
   };
 };
 

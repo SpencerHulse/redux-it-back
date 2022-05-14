@@ -6,19 +6,23 @@ import { QUERY_PRODUCTS } from "../utils/queries";
 import spinner from "../assets/spinner.gif";
 
 import Cart from "../components/Cart";
-import { useStoreContext } from "../utils/GlobalState";
 import {
-  REMOVE_FROM_CART,
-  UPDATE_CART_QUANTITY,
-  ADD_TO_CART,
-  UPDATE_PRODUCTS,
+  updateProducts,
+  itemToCart,
+  updateQuantity,
+  removeItemFromCart,
 } from "../utils/actions";
 import { idbPromise } from "../utils/helpers";
+import { connect } from "react-redux";
 
-function Detail() {
-  const [state, dispatch] = useStoreContext();
-  const { products, cart } = state;
-
+function Detail({
+  products,
+  cart = [],
+  getProducts,
+  addItemToCart,
+  update,
+  remove,
+}) {
   const { id } = useParams();
   // Local is still used here because this is the only place in the app it is needed
   // Saving it would provide no benefit
@@ -30,11 +34,7 @@ function Detail() {
     const itemInCart = cart.find((cartItem) => cartItem._id === id);
 
     if (itemInCart) {
-      dispatch({
-        type: UPDATE_CART_QUANTITY,
-        _id: id,
-        purchaseQuantity: parseInt(itemInCart.purchaseQuantity) + 1,
-      });
+      update(id, parseInt(itemInCart.purchaseQuantity) + 1);
 
       // If updating quantity, use the existing data
       idbPromise("cart", "put", {
@@ -42,20 +42,14 @@ function Detail() {
         purchaseQuantity: parseInt(itemInCart.purchaseQuantity) + 1,
       });
     } else {
-      dispatch({
-        type: ADD_TO_CART,
-        product: { ...currentProduct, purchaseQuantity: 1 },
-      });
+      addItemToCart(currentProduct);
 
       idbPromise("cart", "put", { ...currentProduct, purchaseQuantity: 1 });
     }
   };
 
   const removeFromCart = () => {
-    dispatch({
-      type: REMOVE_FROM_CART,
-      _id: currentProduct._id,
-    });
+    remove(currentProduct._id);
 
     idbPromise("cart", "delete", { ...currentProduct });
   };
@@ -67,24 +61,17 @@ function Detail() {
       setCurrentProduct(products.find((product) => product._id === id));
       // If there is no global state data, the data from the Query is used
     } else if (data) {
-      // Global state is then updated, and the entire thing is run again, where it now hits the setCurrentProduct
-      dispatch({
-        type: UPDATE_PRODUCTS,
-        products: data.products,
-      });
+      getProducts(data.products);
 
       data.products.forEach((product) => {
         idbPromise("products", "put", product);
       });
     } else if (!loading) {
       idbPromise("products", "get").then((indexedProducts) => {
-        dispatch({
-          type: UPDATE_PRODUCTS,
-          products: indexedProducts,
-        });
+        getProducts(indexedProducts);
       });
     }
-  }, [products, data, dispatch, id, loading]);
+  }, [products, data, getProducts, id, loading]);
 
   return (
     <>
@@ -119,4 +106,19 @@ function Detail() {
   );
 }
 
-export default Detail;
+const mapStateToProps = (state) => {
+  console.log(state);
+  const { products, cart } = state;
+  return { products, cart };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getProducts: (products) => dispatch(updateProducts(products)),
+    addItemToCart: (item) => dispatch(itemToCart(item)),
+    update: (id, quantity) => dispatch(updateQuantity(id, quantity)),
+    remove: (id) => dispatch(removeItemFromCart(id)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Detail);
