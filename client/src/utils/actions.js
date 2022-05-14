@@ -47,3 +47,11 @@ export const removeItemFromCart = (id) => {
 export const updateQuantity = (id, quantity) => {
   return { type: UPDATE_CART_QUANTITY, _id: id, purchaseQuantity: quantity };
 };
+
+export const toggleTheCart = () => {
+  return { type: TOGGLE_CART };
+};
+
+export const addMultipleToTheCart = (cart) => {
+  return { type: ADD_MULTIPLE_TO_CART, products: cart };
+};

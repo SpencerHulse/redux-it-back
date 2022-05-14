@@ -1,5 +1,4 @@
 import React from "react";
-import { useStoreContext } from "../../utils/GlobalState";
 import { removeItemFromCart, updateQuantity } from "../../utils/actions";
 import { idbPromise } from "../../utils/helpers";
 import { connect } from "react-redux";

@@ -2,28 +2,26 @@ import React, { useEffect } from "react";
 import CartItem from "../CartItems";
 import Auth from "../../utils/auth";
 import "./style.css";
-// Context API for global state
-import { useStoreContext } from "../../utils/GlobalState";
-import { TOGGLE_CART, ADD_MULTIPLE_TO_CART } from "../../utils/actions";
+import { toggleTheCart, addMultipleToTheCart } from "../../utils/actions";
 import { idbPromise } from "../../utils/helpers"; // Persistence
 // Stripe
 import { loadStripe } from "@stripe/stripe-js";
 import { useLazyQuery } from "@apollo/client"; // Lazy hooks only occur when called, not upon render
 import { QUERY_CHECKOUT } from "../../utils/queries";
+import { connect } from "react-redux";
 // API Key (Currently the TEST key)
 const stripePromise = loadStripe("pk_test_TYooMQauvdEDq54NiTphI7jx");
 
-const Cart = () => {
-  const [state, dispatch] = useStoreContext();
+const Cart = ({ cart, cartOpen, toggle, addMultiple }) => {
   const [getCheckout, { data }] = useLazyQuery(QUERY_CHECKOUT); // Only occurs when called
 
   function toggleCart() {
-    dispatch({ type: TOGGLE_CART });
+    toggle();
   }
 
   function calculateTotal() {
     let sum = 0;
-    state.cart.forEach((item) => {
+    cart.forEach((item) => {
       sum += item.price * item.purchaseQuantity;
     });
     return sum.toFixed(2);
@@ -32,7 +30,7 @@ const Cart = () => {
   function submitCheckout() {
     const productIds = [];
 
-    state.cart.forEach((item) => {
+    cart.forEach((item) => {
       for (let i = 0; i < item.purchaseQuantity; i++) {
         productIds.push(item._id);
       }
@@ -55,15 +53,15 @@ const Cart = () => {
   useEffect(() => {
     async function getCart() {
       const cart = await idbPromise("cart", "get");
-      dispatch({ type: ADD_MULTIPLE_TO_CART, products: [...cart] });
+      addMultiple([...cart]);
     }
 
-    if (!state.cart.length) {
+    if (!cart.length) {
       getCart();
     }
-  }, [state.cart.length, dispatch]);
+  }, [cart.length, addMultiple, toggle]);
 
-  if (!state.cartOpen) {
+  if (!cartOpen) {
     return (
       <div className="cart-closed" onClick={toggleCart}>
         {/* You should always wrap emojis (like the shopping cart icon) in a <span> element
@@ -82,9 +80,9 @@ const Cart = () => {
         [close]
       </div>
       <h2>Shopping Cart</h2>
-      {state.cart.length ? (
+      {cart.length ? (
         <div>
-          {state.cart.map((item) => (
+          {cart.map((item) => (
             <CartItem key={item._id} item={item} />
           ))}
           <div className="flex-row space-between">
@@ -108,4 +106,16 @@ const Cart = () => {
   );
 };
 
-export default Cart;
+const mapStateToProps = (state) => {
+  const { cart, cartOpen } = state;
+  return { cart, cartOpen };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    toggle: () => dispatch(toggleTheCart()),
+    addMultiple: (cart) => dispatch(addMultipleToTheCart(cart)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Cart);
