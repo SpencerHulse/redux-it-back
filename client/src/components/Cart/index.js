@@ -59,7 +59,7 @@ const Cart = ({ cart, cartOpen, toggle, addMultiple }) => {
     if (!cart.length) {
       getCart();
     }
-  }, [cart.length, addMultiple, toggle]);
+  }, [cart.length, addMultiple]);
 
   if (!cartOpen) {
     return (

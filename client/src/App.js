@@ -16,9 +16,6 @@ import Signup from "./pages/Signup";
 import Nav from "./components/Nav";
 import OrderHistory from "./pages/OrderHistory";
 import Success from "./pages/Success";
-
-import { StoreProvider } from "./utils/GlobalState"; // React Context API?
-// Redux store needs to go here to replace Context API...
 // redux stuff
 import { createStore } from "redux";
 // reducer
@@ -52,20 +49,18 @@ function App() {
     <ApolloProvider client={client}>
       <Router>
         <div>
-          <StoreProvider>
-            <Provider store={store}>
-              <Nav />
-              <Switch>
-                <Route exact path="/" component={Home} />
-                <Route exact path="/login" component={Login} />
-                <Route exact path="/signup" component={Signup} />
-                <Route exact path="/orderHistory" component={OrderHistory} />
-                <Route exact path="/products/:id" component={Detail} />
-                <Route exact path="/success" component={Success} />
-                <Route component={NoMatch} />
-              </Switch>
-            </Provider>
-          </StoreProvider>
+          <Provider store={store}>
+            <Nav />
+            <Switch>
+              <Route exact path="/" component={Home} />
+              <Route exact path="/login" component={Login} />
+              <Route exact path="/signup" component={Signup} />
+              <Route exact path="/orderHistory" component={OrderHistory} />
+              <Route exact path="/products/:id" component={Detail} />
+              <Route exact path="/success" component={Success} />
+              <Route component={NoMatch} />
+            </Switch>
+          </Provider>
         </div>
       </Router>
     </ApolloProvider>

@@ -107,7 +107,6 @@ function Detail({
 }
 
 const mapStateToProps = (state) => {
-  console.log(state);
   const { products, cart } = state;
   return { products, cart };
 };
