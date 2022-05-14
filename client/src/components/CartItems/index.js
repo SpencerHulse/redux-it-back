@@ -57,6 +57,11 @@ const CartItem = ({ item, remove, update }) => {
   );
 };
 
+const mapStateToProps = (state) => {
+  const { cart } = state;
+  return { cart };
+};
+
 const mapDispatchToProps = (dispatch) => {
   return {
     remove: (id) => dispatch(removeItemFromCart(id)),
@@ -64,4 +69,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(null, mapDispatchToProps)(CartItem);
+export default connect(mapStateToProps, mapDispatchToProps)(CartItem);
