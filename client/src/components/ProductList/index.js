@@ -5,25 +5,19 @@ import ProductItem from "../ProductItem";
 import { QUERY_PRODUCTS } from "../../utils/queries";
 import spinner from "../../assets/spinner.gif";
 
-import { useStoreContext } from "../../utils/GlobalState";
-import { UPDATE_PRODUCTS } from "../../utils/actions";
+import { connect } from "react-redux";
+import { updateProducts } from "../../utils/actions";
 import { idbPromise } from "../../utils/helpers";
 
-function ProductList() {
-  const [state, dispatch] = useStoreContext();
-
-  const { currentCategory } = state;
-
+function ProductList({ products = [], currentCategory = "", getProducts }) {
   const { loading, data } = useQuery(QUERY_PRODUCTS);
 
   useEffect(() => {
     // If there's data to be stored, save it in two places
     if (data) {
+      console.log(data);
       // Global state object
-      dispatch({
-        type: UPDATE_PRODUCTS,
-        products: data.products,
-      });
+      getProducts(data.products);
 
       // IndexedDB
       data.products.forEach((product) => {
@@ -35,20 +29,17 @@ function ProductList() {
       // Since offline, all the data comes from the indexedDB "products" store
       idbPromise("products", "get").then((products) => {
         // Use the retrieved data to set state for offline browsing
-        dispatch({
-          type: UPDATE_PRODUCTS,
-          products: products,
-        });
+        getProducts(products);
       });
     }
-  }, [data, loading, dispatch]);
+  }, [data, loading]);
 
   function filterProducts() {
     if (!currentCategory) {
-      return state.products;
+      return products;
     }
 
-    return state.products.filter(
+    return products.filter(
       (product) => product.category._id === currentCategory
     );
   }
@@ -56,7 +47,7 @@ function ProductList() {
   return (
     <div className="my-2">
       <h2>Our Products:</h2>
-      {state.products.length ? (
+      {products.length ? (
         <div className="flex-row">
           {filterProducts().map((product) => (
             <ProductItem
@@ -77,4 +68,15 @@ function ProductList() {
   );
 }
 
-export default ProductList;
+const mapStateToProps = (state) => {
+  console.log(state);
+  const { products, currentCategory } = state;
+  // console.log(products);
+  return { products, currentCategory };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return { getProducts: (products) => dispatch(updateProducts(products)) };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProductList);

@@ -9,3 +9,8 @@ export const REMOVE_FROM_CART = "REMOVE_FROM_CART";
 export const UPDATE_CART_QUANTITY = "UPDATE_CART_QUANTITY";
 export const CLEAR_CART = "CLEAR_CART";
 export const TOGGLE_CART = "TOGGLE_CART";
+
+// Action functions
+export const updateProducts = (products) => {
+  return { type: UPDATE_PRODUCTS, payload: { products } };
+};
