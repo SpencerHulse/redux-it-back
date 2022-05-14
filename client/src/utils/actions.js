@@ -31,3 +31,11 @@ export const itemToCart = (item) => {
     payload: { product: { ...item, purchaseQuantity: 1 } },
   };
 };
+
+export const updateTheCategories = (categories) => {
+  return { type: UPDATE_CATEGORIES, categories: categories };
+};
+
+export const updateCurrentCategory = (id) => {
+  return { type: UPDATE_CURRENT_CATEGORY, currentCategory: id };
+};

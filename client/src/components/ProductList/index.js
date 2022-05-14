@@ -31,7 +31,7 @@ function ProductList({ products = [], currentCategory = "", getProducts }) {
         getProducts(products);
       });
     }
-  }, [data, loading]);
+  }, [data, loading, getProducts]);
 
   function filterProducts() {
     if (!currentCategory) {
